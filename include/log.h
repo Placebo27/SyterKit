@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+/* SPDX-License-Identifier: Apache-2.0 */
 
 #ifndef __DEBUG_H__
 #define __DEBUG_H__
@@ -32,7 +32,7 @@ extern "C" {
 #elif defined TRACE_MODE
 #define LOG_LEVEL_DEFAULT LOG_LEVEL_TRACE
 #else
-#define LOG_LEVEL_DEFAULT LOG_LEVEL_INFO
+#define LOG_LEVEL_DEFAULT LOG_LEVEL_DEBUG
 #endif// DEBUG_MODE
 
 #endif// LOG_LEVEL_DEFAULT

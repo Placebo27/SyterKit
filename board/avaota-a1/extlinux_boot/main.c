@@ -31,6 +31,7 @@
 #include <libfdt.h>
 #include <sys-sdhci.h>
 #include <uart.h>
+#include <gpt.h>
 
 #include "spi_lcd.c"
 
@@ -570,36 +571,6 @@ _error:
     return err;
 }
 
-static int abortboot_single_key(int bootdelay) {
-    int abort = 0;
-    unsigned long ts;
-
-    printk_info("Hit any key to stop autoboot: %2d ", bootdelay);
-
-    /* Check if key already pressed */
-    if (tstc()) {       /* we got a key press */
-        uart_getchar(); /* consume input */
-        printk(LOG_LEVEL_MUTE, "\b\b\b%2d", bootdelay);
-        abort = 0; /* auto boot */
-    }
-
-    while ((bootdelay > 0) && (!abort)) {
-        --bootdelay;
-        /* delay 1000 ms */
-        ts = time_ms();
-        do {
-            if (tstc()) {  /* we got a key press */
-                abort = 1; /* don't auto boot */
-                break;
-            }
-            udelay(10000);
-        } while (!abort && time_ms() - ts < 1000);
-        printk(LOG_LEVEL_MUTE, "\b\b\b%2d ", bootdelay);
-    }
-    uart_putchar('\n');
-    return abort;
-}
-
 int main(void) {
     sunxi_serial_init(&uart_dbg);
 
@@ -685,19 +656,22 @@ int main(void) {
     if (sdmmc_init(&card0, &sdhci0) != 0) {
         printk_warning("SMHC: SDC0 init failed, init SDC2...\n");
         /* Initialize the SD host controller. */
-        if (sunxi_sdhci_init(&sdhci2) != 0) {
-            printk_error("SMHC: %s controller init failed\n", sdhci2.name);
+        mdelay(100);
+        if (sunxi_sdhci_init(&sdhci0) != 0) {
+            printk_error("SMHC: %s controller init failed\n", sdhci0.name);
             LCD_ShowString(0, 92, "SMHC: SDC2 controller init failed", SPI_LCD_COLOR_GREEN, SPI_LCD_COLOR_BLACK, 12);
             goto _fail;
         } else {
-            printk_info("SMHC: %s controller initialized\n", sdhci2.name);
+            printk_info("SMHC: %s controller initialized\n", sdhci0.name);
         }
 
-        if (sdmmc_init(&card0, &sdhci2) != 0) {
+        if (sdmmc_init(&card0, &sdhci0) != 0) {
             printk_warning("SMHC: SDC2 init failed.\n");
             goto _fail;
         }
     }
+
+    init_gpt_sdmmc(&card0);
 
     /* Load the DTB, kernel image, and configuration data from the SD card. */
     if (load_sdcard(&image) != 0) {

@@ -42,6 +42,9 @@ add_library(SyterKit STATIC
     # ctype
     ctype.c
 
+    # gpt
+    gpt.c
+
     # chip driver
     $<TARGET_OBJECTS:chip_drivers-obj>
 

@@ -10,7 +10,8 @@
 #include <stdint.h>
 #include <types.h>
 
-#include "sys-sdhci.h"
+#include <sys-sdhci.h>
+#include <sys-gpio.h>
 
 #include "log.h"
 
@@ -225,6 +226,6 @@ uint64_t sdmmc_blk_read(sdmmc_pdata_t *data, uint8_t *buf, uint64_t blkno, uint6
 
 #ifdef __cplusplus
 }
-#endif // __cplusplus
+#endif// __cplusplus
 
 #endif /* __SDCARD_H__ */

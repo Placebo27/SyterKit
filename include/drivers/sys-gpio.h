@@ -10,8 +10,6 @@
 #include <stdint.h>
 #include <types.h>
 
-#include "log.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif// __cplusplus

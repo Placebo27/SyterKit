@@ -3,7 +3,7 @@
 
 #include <types.h>
 
-#include <sys-gpio.h>
+#include "sys-gpio.h"
 
 #ifdef __cplusplus
 extern "C" {
